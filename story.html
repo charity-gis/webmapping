@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kenya cities</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: row;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        #map {
+            height: 100%;
+            width: 50%;
+            position: relative;
+        }
+
+        #story {
+            width: 50%;
+            overflow-y: scroll;
+            padding: 20px;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            box-shadow: -5px 0 5px -5px rgba(0,0,0,0.3);
+        }
+
+        .story-section {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #34495e;
+            border: 1px solid #2c3e50;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .story-section:hover {
+            background-color: #1abc9c;
+        }
+
+        .story-section h2 {
+            margin: 0;
+            font-size: 1.5em;
+            color: #ecf0f1;
+        }
+
+        .story-section p {
+            margin: 10px 0 0;
+            color: #bdc3c7;
+        }
+
+        /* Style for the video iframe on the map */
+        .video-overlay {
+            position: absolute;
+            width: 400px;
+            height: 300px;
+            border: none;
+            display: none;
+            z-index: 1000;
+        }
+
+        /* Button to close the video */
+        .close-video {
+            position: absolute;
+            top: -30px;
+            right: -10px;
+            background-color: #000;
+            color: #fff;
+            padding: 5px;
+            cursor: pointer;
+            z-index: 1001;
+            border-radius: 50%;
+            line-height: 10px;
+            text-align: center;
+            font-size: 18px;
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<div id="story">
+    <h1 style="color: #ecf0f1; text-align: center; margin-bottom: 20px;">KENYA'S BEAUTIFUL CITIES TO TOUR</h1>
+    
+    <div class="story-section" data-lat="" data-lon="36.817223" data-video="https://www.youtube.com/embed/4Ue_SnkveJo">
+        <h2>NAIROBI CITY</h2>
+        <p>With cool places to visit and great adventure ,a place of cool waters</p>
+    </div>
+
+    <div class="story-section" data-lat="-4.043477" data-lon="39.668206" data-video="https://www.youtube.com/embed/zVEti8EM_LU">
+        <h2>MOMBASA CITY</h2>
+        <p>County 001 , The beach,the food , the lifestyle ,ooooh you will love it</p>
+    </div>
+
+    <div class="story-section" data-lat="-0.091702" data-lon="34.768002" data-video="https://www.youtube.com/embed/GEfccAYQMRU">
+        <h2>KISUMU CITY</h2>
+        <p>The lake side, fish in plenty and the people sophistication , I mean!!!</p>
+    </div>
+
+    <div class="story-section" data-lat="-0.303099 " data-lon="36.080025" data-video="https://www.youtube.com/embed/pc5v3sFMqow">
+        <h2>NAKURU CITY</h2>
+        <p>The cleanest city ,lake nakuru, you have to visit !!!!</p>
+    </div>
+
+    <div class="story-section" data-lat="0.514277" data-lon="35.269779" data-video="https://www.youtube.com/embed/w-wMB-bjA30">
+        <h2>ELDORET CITY</h2>
+        <p>All i can say is home of champions , THE GOAT ELIUD KIPCHOGE .Just but a tip of the iceberg..</p>
+    </div>
+</div>
+
+<!-- Iframe for video overlay -->
+<iframe id="videoOverlay" class="video-overlay"></iframe>
+<div id="closeButton" class="close-video" style="display:none;">&times;</div>
+
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script>
+    // Initialize the map
+    var map = L.map('map').setView([20, 0], 2);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+    }).addTo(map);
+
+    // Function to simulate traveling to a location and play video
+    function travelToLocation(lat, lon, video) {
+        var target = L.latLng(lat, lon);
+        
+        // Smooth fly-to animation
+        map.flyTo(target, 10, {
+            animate: true,
+            duration: 3 // Adjust the duration for smoother travel
+        });
+
+        // Place a marker after reaching the location
+        L.marker([lat, lon]).addTo(map);
+
+        // Show the video overlay after the fly animation ends
+        setTimeout(function() {
+            showVideoOverlay(lat, lon, video);
+        }, 3000); // Match this with the flyTo duration
+    }
+
+    // Function to show video overlay on the map
+    function showVideoOverlay(lat, lon, video) {
+        var videoOverlay = document.getElementById('videoOverlay');
+        var closeButton = document.getElementById('closeButton');
+
+        // Get pixel position from lat/lon
+        var point = map.latLngToContainerPoint([lat, lon]);
+
+        // Position the iframe on the map
+        videoOverlay.style.left = (point.x - 200) + 'px'; // Center the iframe
+        videoOverlay.style.top = (point.y - 150) + 'px';
+        videoOverlay.src = video;
+        videoOverlay.style.display = 'block';
+
+        // Show the close button
+        closeButton.style.left = (point.x + 185) + 'px'; // Position relative to iframe
+        closeButton.style.top = (point.y - 170) + 'px'; // Adjusted to avoid the long line
+        closeButton.style.display = 'block';
+    }
+
+    // Close the video overlay
+    document.getElementById('closeButton').onclick = function() {
+        var videoOverlay = document.getElementById('videoOverlay');
+        videoOverlay.style.display = 'none';
+        videoOverlay.src = ""; // Stop the video
+        document.getElementById('closeButton').style.display = 'none';
+    }
+
+    // Add click event listeners to each story section
+    document.querySelectorAll('.story-section').forEach(function(section) {
+        section.addEventListener('click', function() {
+            var lat = section.getAttribute('data-lat');
+            var lon = section.getAttribute('data-lon');
+            var video = section.getAttribute('data-video');
+            travelToLocation(lat, lon, video);
+        });
+    });
+</script>
+
+</body>
+</html>

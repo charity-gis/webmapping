@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Cancer Cases Map</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        /* Set up a grid layout with two sections */
+        body {
+            display: grid;
+            grid-template-columns: 3fr 1fr; /* 3/4 for map, 1/4 for image */
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* Map Container styling */
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        /* Image section styling */
+        #image-section {
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            box-shadow: -3px 0 5px rgba(0,0,0,0.1);
+        }
+
+        #image-section img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain; /* Ensures the image fits within the div */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Map Container -->
+    <div id="map"></div>
+
+    <!-- Image Section -->
+    <div id="image-section">
+        <img src="https://www.uicc.org/sites/default/files/styles/hero_extra_large/public/thumbnails/image/GLOBOCAN%202018%20Global%20burden%20maps.jpg.webp?itok=JyoEd1sv" alt="Cancer Awareness">
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <!-- Our custom JavaScript -->
+    <script>
+        // Initialize the map and set its view to the world
+        var map = L.map('map').setView([20, 0], 2); // Centered at latitude 20, longitude 0, zoom level 2
+
+        // Add OpenStreetMap tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(map);
+
+        // Data for cancer cases in different continents
+        var cancerData = [
+            {
+                continent: "Asia",
+                coords: [34.0479, 100.6197],
+                cases: "4.3 million",
+                image: "https://assets.weforum.org/editor/YySNnMqNmkIK6dSz_DLWg7tEQTMxspsQqxaMKNQIyTQ.png"
+            },
+            {
+                continent: "Africa",
+                coords: [1.6508, 10.2679],
+                cases: "1.1 million",
+                image: "https://pbs.twimg.com/media/EQAF3f5XkAUDNEV?format=png&name=4096x4096" // Replace with a valid image URL
+            },
+            {
+                continent: "Europe",
+                coords: [54.5260, 15.2551],
+                cases: "3.9 million",
+                image: "https://beatcancer.eu/wp-content/uploads/2023/10/Infographic-Childhood-cancer-cases.png" // Replace with a valid image URL
+            },
+            {
+                continent: "North America",
+                coords: [54.5260, -105.2551],
+                cases: "2.4 million",
+                image: "https://www.cancertherapyadvisor.com/wp-content/uploads/sites/12/2021/02/cta-fig-1-1-1024x636.png" // Replace with a valid image URL
+            },
+            {
+                continent: "South America",
+                coords: [-8.7832, -55.4915],
+                cases: "1.5 million",
+                image: "https://www.cancer.org/adobe/dynamicmedia/deliver/dm-aid--98e57b9a-5d9c-45e6-9b8f-e19e383fb7f2/infographic-2024-cancer-ff-news.png?quality=82&preferwebp=true" // Replace with a valid image URL
+            },
+            {
+                continent: "Australia",
+                coords: [-25.2744, 133.7751],
+                cases: "0.2 million",
+                image: "https://www.canceraustralia.gov.au/sites/default/files/estimated-cancer-mortality-2022.png" // Replace with a valid image URL
+            },
+            {
+                continent: "Antarctica",
+                coords: [-82.8628, 135.0000],
+                cases: "N/A",
+                image: "https://www.meridianbioscience.com/uploads/Cancer-STD-blog-1000.jpg" // Replace with a valid image URL
+            }
+        ];
+
+        // Function to create markers
+        cancerData.forEach(function(data) {
+            // Custom icon (optional)
+            var customIcon = L.icon({
+                iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png', // Replace with a relevant icon URL
+                iconSize: [30, 30], // size of the icon
+                iconAnchor: [15, 30], // point of the icon which will correspond to marker's location
+                popupAnchor: [0, -30] // point from which the popup should open relative to the iconAnchor
+            });
+
+            // Create marker
+            var marker = L.marker(data.coords, {icon: customIcon}).addTo(map);
+
+            // Prepare image HTML (ensure the image URLs are valid)
+            var imageHtml = data.image ? '<img src="' + data.image + '" alt="Cancer Image" class="popup-image">' : '';
+
+            // Bind popup to marker
+            marker.bindPopup(
+                '<h3>' + data.continent + '</h3>' +
+                '<p><strong>Annual Cancer Cases:</strong> ' + data.cases + '</p>' +
+                imageHtml
+            );
+        });
+    </script>
+</body>
+</html>
